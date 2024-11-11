@@ -32,6 +32,9 @@ class Enigma:
 
         if self.roter_2 > self.MAX_CHR-1:
             self.roter_2 = 0
+
+    def roter_1_apulaz(self, inp: str):
+        return self.roter_1_com_inv[inp]
     
     def encrypt(self, value: str):
         result = []
@@ -41,7 +44,7 @@ class Enigma:
                 result.append(chr(self.roter_1_com[char_code]+self.roter_1))
             except ValueError:
                 self.roter_1 = 0
-                result.append(chr(self.roter_1_com[char_code]+self.roter_1))
+                result.append(chr(self.roter_1_zalupa(char_code)+self.roter_1))
 
             self.roter_1 += 1
         result = ''.join(result).encode()
@@ -56,10 +59,10 @@ class Enigma:
         str(value)
         for char in value:
             try:
-                result.append(chr(self.roter_1_com_inv[ord(char)]-self.roter1_start))
+                result.append(chr(self.roter_1_apulaz(ord(char))-self.roter1_start))
             except ValueError:
                 self.roter1_start = 0
-                result.append(chr(self.roter_1_com_inv[ord(char)]-self.roter1_start))
+                result.append(chr(self.roter_1_apulaz(ord(char))-self.roter1_start))
 
             self.roter1_start += 1
         return ''.join(result)
