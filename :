@@ -5,8 +5,8 @@ import base64
 class Enigma:
     MAX_CHR = 1114111
 
-    roter_1 = 31
-    roter_2 = 55
+    roter_1 = 32
+    roter_2 = 53
     roter1_start = roter_1
     roter2_start = roter_2
     
@@ -20,27 +20,42 @@ class Enigma:
     roter_1_com_inv = dict(zip(roter_1_com.values(), roter_1_com.keys()))
     roter_2_com_inv = dict(zip(roter_2_com.values(), roter_1_com.keys()))
 
+    def reset(self):
+        if self.roter_1 > self.MAX_CHR:
+            self.roter_1 = 0 
 
+        if self.roter_2 > self.MAX_CHR:
+            self.roter_2 = 0
+
+    def teser(self):
+        if self.roter_1 > self.MAX_CHR-1:
+            self.roter_1 = 0 
+
+        if self.roter_2 > self.MAX_CHR-1:
+            self.roter_2 = 0
     
     def encrypt(self, value: str):
         result = []
-
-        def enc(self, char_code):
-            return self.roter_1_com[char_code]+self.roter_1+self.roter_2
-
         for char in value:
             char_code = ord(char)
             try:
-                result.append(chr(enc(self, char_code)))
+                ch = (self.roter_1_com[char_code]+self.roter_1) + (self.roter_2_com[char_code]+self.roter_2)
+                result.append(chr(ch)
+#                         chr(
+#                             self.roter_1_com[char_code]+self.roter_1 + self.roter_2_com[char_code]+self.roter_2
+#                             )
+                        )
             except ValueError:
                 print('PING')
                 self.roter_1 = 0
                 self.roter_2 = 0
-                ch = (self.roter_1_com[char_code]+self.roter_1+self.roter_2)
-                result.append(chr(ch))
+                result.append(
+                        chr(
+                            self.roter_1_com[char_code]+self.roter_1 - self.roter_2_com[char_code]+self.roter_2
+                            )
+                        )
 
             self.roter_1 += 1
-            self.roter_2 += 1
         result = ''.join(result).encode()
         result = base64.b64encode(result)
         return result.decode()
@@ -52,21 +67,22 @@ class Enigma:
         print(value)
         str(value)
         print()
-
-        def enc(self):
-            return self.roter_1_com_inv[ord(char)]-self.roter1_start-self.roter2_start
-
         for char in value:
             try:
-                result.append(chr(enc(self)))
+                ch = ((self.roter_1_com_inv[ord(char)]-self.roter1_start) - (self.roter_2_com_inv[ord(char)]-self.roter2_start))
+#                ch = (self.roter_1_com_inv[ord(char)]-self.roter1_start) + (self.roter_2_com_inv[ord(char)]-self.roter2_start)
+                result.append(chr(ch))
+#                         chr(
+#                             ((self.roter_1_com_inv[ord(char)]-self.roter1_start) + (self.roter_2_com_inv[ord(char)]-self.roter2_start))
+#                         ))
             except ValueError:
                 print('PINGD', end='')
                 self.roter1_start = 0
                 self.roter2_start = 0
-                result.append(chr(enc(self)))
+                ch = ((self.roter_1_com_inv[ord(char)]-self.roter1_start) + (self.roter_2_com_inv[ord(char)]-self.roter2_start))
+                result.append(chr(ch))
 
             self.roter1_start += 1
-            self.roter2_start += 1
         return ''.join(result)
 
 
