@@ -2,11 +2,36 @@ import random
 import base64
 
 
+class Roter:
+    MAX_CHR = 1114111
+    commutation_table = {}
+    def __init__(self, number, position: int, commutation_table):
+        self.number = number
+        self.start_position = position
+   
+    for c in range(0, MAX_CHR):
+        commutation_table[c] = c 
+
+
+    commutation_table_inv = dict(zip(commutation_table.values(), commutation_table.keys()))
+    
+        
+
 class Enigma:
     MAX_CHR = 1114111
 
-    roter_1 = MAX_CHR
-    roter_2 = MAX_CHR
+    def __init__(self, count_roters: int = 3):
+        for x in range(1, count_roters):
+            runst = f"self.roter_{x} = 0;"\
+                    f"self.roter{x}_start = self.roter_{x};"\
+                    f"roter_{x}_com = {x}; "\
+                    f"for c in range(0, self.MAX_CHR): "\
+                    f"roter_{x}_com[c] = c;"\
+                    f"roter_{x}_com_inv = dict(zip(roter_{x}_com.values(), roter_{x}_com.keys()))"
+#             exec(runst)
+
+    roter_1 = 0
+    roter_2 = 0
     roter1_start = roter_1
     roter2_start = roter_2
     
@@ -14,39 +39,32 @@ class Enigma:
     roter_2_com = {}
 
     for c in range(0, MAX_CHR):
-        roter_1_com[c] = c
-        roter_2_com[c] = c
+        roter_1_com[c] = c 
+        roter_2_com[c] = c 
 
     roter_1_com_inv = dict(zip(roter_1_com.values(), roter_1_com.keys()))
+    roter_2_com_inv = dict(zip(roter_2_com.values(), roter_1_com.keys()))
 
-    def reset(self):
-        if self.roter_1 > self.MAX_CHR:
-            self.roter_1 = 0 
 
-        if self.roter_2 > self.MAX_CHR:
-            self.roter_2 = 0
-
-    def teser(self):
-        if self.roter_1 > self.MAX_CHR-1:
-            self.roter_1 = 0 
-
-        if self.roter_2 > self.MAX_CHR-1:
-            self.roter_2 = 0
-
-    def roter_1_apulaz(self, inp: str):
-        return self.roter_1_com_inv[inp]
     
     def encrypt(self, value: str):
         result = []
+
+        def enc(self, char_code):
+            return self.roter_1_com[char_code]+self.roter_1+self.roter_2
+
         for char in value:
             char_code = ord(char)
             try:
-                result.append(chr(self.roter_1_com[char_code]+self.roter_1))
+                result.append(chr(enc(self, char_code)))
             except ValueError:
+                print('PING')
                 self.roter_1 = 0
-                result.append(chr(self.roter_1_zalupa(char_code)+self.roter_1))
+                self.roter_2 = 0
+                result.append(chr(enc(self, char_code)))
 
             self.roter_1 += 1
+            self.roter_2 += 1
         result = ''.join(result).encode()
         result = base64.b64encode(result)
         return result.decode()
@@ -56,21 +74,35 @@ class Enigma:
         value = base64.b64decode(value.encode()).decode()
         print()
         print(value)
+        print()
+        for ch in value:
+            print(ord(ch), end=' ')
+        print()
+        print()
+        print(value)
         str(value)
+        print()
+
+        def enc(self):
+            return self.roter_1_com_inv[ord(char)]-self.roter1_start-self.roter2_start
+
         for char in value:
             try:
-                result.append(chr(self.roter_1_apulaz(ord(char))-self.roter1_start))
+                result.append(chr(enc(self)))
             except ValueError:
+                print('PINGD', end='')
                 self.roter1_start = 0
-                result.append(chr(self.roter_1_apulaz(ord(char))-self.roter1_start))
+                self.roter2_start = 0
+                result.append(chr(enc(self)))
 
             self.roter1_start += 1
+            self.roter2_start += 1
         return ''.join(result)
 
 
 enigma = Enigma()
 # enc = enigma.encrypt("Hello world!\nHello world!")
-_str = '''
+_str = '''000000000
 Привет бонч, ты должен УМЕРЕТЬ!!
 
  Decoding Base64 string is exactly opposite to that of encoding. First we convert the Base64 strings into unencoded data bytes followed by conversion into bytes-like object into a string. The below example depicts the decoding of the above example encode string output.
