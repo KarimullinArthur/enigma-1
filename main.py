@@ -19,10 +19,10 @@ class Roter:
             full_abc.append(c)
 
         for c in range(0, MAX_CHR+1):
-#             self.commutation_table[c] = c
-            foo = random.choice(full_abc)
-            self.commutation_table[c] = foo
-            full_abc.remove(foo)
+            self.commutation_table[c] = c
+#             foo = random.choice(full_abc)
+#             self.commutation_table[c] = foo
+#             full_abc.remove(foo)
         
         self.commutation_table_inv = dict(zip(self.commutation_table.values(), self.commutation_table.keys()))
         print(self.commutation_table)
@@ -41,7 +41,7 @@ class Enigma:
 
     def __init__(self, count_roters: int = 3):
         self.roters = []
-        for roter_number in range(1, count_roters+1):
+        for roter_number in range(count_roters):
             self.roters.append(Roter(number=roter_number,
                                      position=0,
                                      turn_position=1,
@@ -66,8 +66,10 @@ class Enigma:
 #                     roter.position = self.MAX_CHR - current_code
 #                     roter.position = 0
 #                     current_code = 0 
-
-                current_code = roter.commutation_table[current_code]#roter.position
+                index = current_code+roter.position
+                if index >= self.MAX_CHR:
+                    index = index-self.MAX_CHR
+                current_code = roter.commutation_table[index]
 #                 if current_code+roter.position >= self.MAX_CHR:
 # #                     roter.position = current_code - self.MAX_CHR
 #                     roter.position = 0 
@@ -86,8 +88,20 @@ class Enigma:
 #                     print(roter.position)
 #                current_code = roter.commutation_table[char_code]+roter.position
 
-                roter.count_of_turns += 1
+#                 roter = self.roters[0]
+#                 roter.count_of_turns += 1
+
+                roter = self.roters[0]
                 roter.position += 1 
+                if roter.position == self.MAX_CHR+1:
+                    roter.position = 0
+                    try:
+                        roter = self.roters[roter_number]
+                        roter.position += 1
+                    except IndexError:
+                        print("NO")
+                        pass
+#                         roter.position += 1
 #                 if roter.count_of_turns > roter.turn_position:
 # #                     print("PING")
 # #                     print(roter.count_of_turns)
@@ -115,12 +129,17 @@ class Enigma:
             current_code = char_code
             for roter_number in range(len(self.roters)-1, 0-1, -1):
 #             for roter_number in range(len(self.roters)):
+#             for roter_number in range(len(self.roters)):
                 roter = self.roters[roter_number]
 #                 if current_code+roter.start_position >= self.MAX_CHR:
 #                     roter.start_position = self.MAX_CHR - current_code
 #                     roter.start_position = 0
 #                     current_code = 0 
-                current_code = roter.commutation_table_inv[current_code]#roter.start_position
+
+                index = current_code-roter.position
+                if index < 0:
+                    index = index+self.MAX_CHR
+                current_code = roter.commutation_table_inv[index]#roter.start_position
 
 #                 if roter.start_position >= self.MAX_CHR:
 #                     roter.start_position = 0
@@ -137,9 +156,22 @@ class Enigma:
 #                     print('---')
 #                     print(roter.position)
 #                 current_code = roter.commutation_table_inv[ord(char_code)]#-roter.start_position
-
-                roter.start_position += 1
-                roter.count_of_turns += 1
+                
+                roter = self.roters[0]
+                roter.position -= 1
+                if roter.position == -1:
+                    roter.position = self.MAX_CHR
+                    try:
+                        roter = self.roters[roter_number]
+                        roter.position -= 1
+                    except IndexError:
+                        print("YES")
+                        pass
+#                         roter.position -= 1
+#                 roter.count_of_turns += 1
+# 
+#                 roter.start_position += 1
+#                 roter.count_of_turns += 1
 #                 if roter.count_of_turns > roter.turn_position:
 # #                     print("PING")
 # #                     print(roter.count_of_turns)
@@ -152,19 +184,21 @@ class Enigma:
 #             print('===')
 #             print(current_code)
 #             print('===')'
-            return chr(current_code)
+            return chr(current_code+1)
 
-        for char in value:
+        for char in value[::-1]:
             result.append(dec(ord(char)))
-        return ''.join(result)
+        return ''.join(result[::-1])
 
 
-enigma = Enigma(count_roters=2)
+enigma = Enigma(count_roters=3)
 "Привет бонч, ты должен УМЕРЕТЬ!!"
 _str = '''!!!!!!!!
 Hello, World!'''
 
-_str = '''Hello world!'''
+_str = '''Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!'''
+
+_str = '''AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaa'''
 
 enc = enigma.encrypt(_str)
 print()
